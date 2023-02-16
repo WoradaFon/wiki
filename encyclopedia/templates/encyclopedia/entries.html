@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{ name }}
+{% endblock %}
+
+{% block body %}
+    {% if entries %}
+        {{ entries|safe }}
+        <br>
+        <a>edit this page</a>
+    {% else %}
+        <h1>{{ name }}</h1>
+        <p>No content for this topic</p>
+    {% endif %}
+{% endblock %}
