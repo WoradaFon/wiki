@@ -3,7 +3,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-#from django.contrib.massages.views import SuccessMassageMixin
+from django.contrib import messages
 
 from . import util
 import re
@@ -29,8 +29,8 @@ def newpage(request):
     if request.method == "POST":
         form = Newpage(request.POST)
         if form.is_valid():
-            content = form.cleaned_data['edit_content']
-            title = form.cleaned_data['edit_title']
+            content = form.cleaned_data['content']
+            title = form.cleaned_data['title']
 
             topics = util.list_entries()
             for topic in topics:
@@ -42,8 +42,12 @@ def newpage(request):
 
             # go to the content
             entries = util.get_entry(title)
+
+            # send success message
+            messages.success(request, "Success!")
             return render(request, "encyclopedia/entries.html", {
-                "entries": markdown2.markdown(entries)
+                "entries": markdown2.markdown(entries),
+                "name": title
             })
     else:
         return render(request, "encyclopedia/newpage.html", {
@@ -69,7 +73,8 @@ def search(request):
             if topic.lower() == search.lower():
                 entries = util.get_entry(search)
                 return render(request, "encyclopedia/entries.html", {
-                    "entries": markdown2.markdown(entries)
+                    "entries": markdown2.markdown(entries),
+                    "name": topic
                     })
             else:
                 if search.lower() in topic.lower():
@@ -118,6 +123,9 @@ def save_edit(request):
 
             #redirect to entry page
             entries = util.get_entry(title)
+
+            messages.success(request, "Edit success!")
             return render(request, "encyclopedia/entries.html", {
-                "entries": markdown2.markdown(entries)
+                "entries": markdown2.markdown(entries),
+                "name": title
             })
