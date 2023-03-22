@@ -15,8 +15,6 @@ class Newpage(forms.Form):
     title = forms.CharField(label="title", widget=forms.Textarea(attrs={'rows':'1', 'class':'form-control'}))
     content = forms.CharField(label="content", widget=forms.Textarea(attrs={'rows':'10', 'class':'form-control'}))
 
-#class alert(SuccessMassageMixin, CreateView):
-
 
 # create your view here.
 def index(request):
@@ -35,6 +33,7 @@ def newpage(request):
             topics = util.list_entries()
             for topic in topics:
                 if topic.lower() == title.lower():
+                    messages.error(request, "This name is already used!")
                     return HttpResponseRedirect(reverse("index"))
             
             # safe the content
@@ -56,9 +55,19 @@ def newpage(request):
 
 
 def entries(request, name):
-    entries = util.get_entry(name)
+    topics = util.list_entries()
+
+    for topic in topics:
+        if topic.lower() == name.lower():
+            entries = util.get_entry(name)
+            return render(request, "encyclopedia/entries.html", {
+                "entries": markdown2.markdown(entries),
+                "name": name
+            })
+
+    # no topic
+    messages.error(request, "does not exits")
     return render(request, "encyclopedia/entries.html", {
-        "entries": markdown2.markdown(entries),
         "name": name
     })
 
@@ -99,10 +108,6 @@ def edit(request):
     if request.method == "POST":
         title = request.POST['name']
         content = util.get_entry(title)
-
-        #class Edit(forms.Form):
-        #    edit_title = forms.CharField(label="title", initial=title, widget=forms.Textarea(attrs={'rows':'1', 'class':'form-control'}))
-        #    edit_content = forms.CharField(label="content", initial=content, widget=forms.Textarea(attrs={'rows':'10', 'class':'form-control'}))
         
         f = Newpage(initial={'title': title, 'content': content})
 
