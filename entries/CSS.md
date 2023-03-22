@@ -1,4 +1,3 @@
-##CSS
-
---This is a static 
-example for entries
+##CSS
+
+CSS is a language that can be used to add style to an [HTML](/wiki/HTML) page.

@@ -8,7 +8,11 @@
     {% if entries %}
         {{ entries|safe }}
         <br>
-        <a>edit this page</a>
+        <form action="{% url 'edit' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="name" value="{{ name }}">
+            <button type="submit">edit this page</button>
+        </form>
     {% else %}
         <h1>{{ name }}</h1>
         <p>No content for this topic</p>
